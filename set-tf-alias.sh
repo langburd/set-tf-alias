@@ -104,3 +104,66 @@ __stf_warn_tenv_missing() {
     >&2
   _SET_TF_ALIAS_TENV_WARNED=1
 }
+
+# Sets the full tf*/tofu/terraform alias set to the named binary.
+# If $1 is empty, unsets all aliases (so $PATH decides).
+# shellcheck disable=SC2139
+__stf_set_aliases() {
+  local bin=$1
+  if [ -z "$bin" ]; then
+    unalias tf tfa tfaa tfat tfc tfd tfdt tff tffr tfg tfi tfim tfir tfiu \
+      tfo tfp tfpsum tfpt tfs tfsh tft tfv tfw tfws tofu terraform 2>/dev/null || true
+    return 0
+  fi
+  alias tf="$bin"
+  alias tfa="$bin apply"
+  alias tfaa="$bin apply -auto-approve"
+  alias tfat="$bin apply -target"
+  alias tfc="$bin console"
+  alias tfd="$bin destroy"
+  alias tfdt="$bin destroy -target"
+  alias tff="$bin fmt"
+  alias tffr="$bin fmt -recursive"
+  alias tfg="$bin get"
+  alias tfi="$bin init"
+  alias tfim="$bin init -migrate-state"
+  alias tfir="$bin init -reconfigure"
+  alias tfiu="$bin init -upgrade"
+  alias tfo="$bin output"
+  alias tfp="$bin plan"
+  alias tfpsum="$bin plan | grep -E '(will|must) be'"
+  alias tfpt="$bin plan -target"
+  alias tfs="$bin state"
+  alias tfsh="$bin show"
+  alias tft="$bin test"
+  alias tfv="$bin validate"
+  alias tfw="$bin workspace"
+  alias tfws="$bin workspace select"
+  alias tofu="$bin"
+  alias terraform="$bin"
+  alias tfa="$bin apply"
+  alias tfaa="$bin apply -auto-approve"
+  alias tfat="$bin apply -target"
+  alias tfc="$bin console"
+  alias tfd="$bin destroy"
+  alias tfdt="$bin destroy -target"
+  alias tff="$bin fmt"
+  alias tffr="$bin fmt -recursive"
+  alias tfg="$bin get"
+  alias tfi="$bin init"
+  alias tfim="$bin init -migrate-state"
+  alias tfir="$bin init -reconfigure"
+  alias tfiu="$bin init -upgrade"
+  alias tfo="$bin output"
+  alias tfp="$bin plan"
+  alias tfpsum="$bin plan | grep -E '(will|must) be'"
+  alias tfpt="$bin plan -target"
+  alias tfs="$bin state"
+  alias tfsh="$bin show"
+  alias tft="$bin test"
+  alias tfv="$bin validate"
+  alias tfw="$bin workspace"
+  alias tfws="$bin workspace select"
+  alias tofu="$bin"
+  alias terraform="$bin"
+}
