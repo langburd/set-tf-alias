@@ -231,3 +231,23 @@ set_tf_alias() {
   # Nothing found — unset aliases
   __stf_set_aliases ''
 }
+
+# ---------------------------------------------------------------------------
+# Hook wiring (gated by SET_TF_ALIAS_AUTOHOOK, default 1)
+# ---------------------------------------------------------------------------
+: "${SET_TF_ALIAS_AUTOHOOK:=1}"
+
+__stf_is_interactive() {
+  case "$-" in
+  *i*) return 0 ;;
+  *) return 1 ;;
+  esac
+}
+
+if [ "$SET_TF_ALIAS_AUTOHOOK" = 1 ]; then
+  if [ "$__STF_SHELL" = zsh ]; then
+    # shellcheck disable=SC1090,SC2296
+    autoload -Uz add-zsh-hook 2>/dev/null || true
+    add-zsh-hook chpwd set_tf_alias 2>/dev/null || true
+  fi
+fi
