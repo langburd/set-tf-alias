@@ -1,0 +1,63 @@
+---
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  gate:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute sha256
+        id: sha
+        run: echo "sha256=$(sha256sum set-tf-alias.sh | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            sha256: `${{ steps.sha.outputs.sha256 }}`
+
+      - name: Open tap PR
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          SHA256: ${{ steps.sha.outputs.sha256 }}
+        run: |
+          set -eu
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/langburd/homebrew-tap.git" tap
+          cd tap
+          git config user.name "set-tf-alias bot"
+          git config user.email "set-tf-alias-bot@users.noreply.github.com"
+          branch="bump-set-tf-alias-${TAG}"
+          git checkout -b "$branch"
+
+          url="https://github.com/langburd/set-tf-alias/archive/refs/tags/${TAG}.tar.gz"
+          sed -i.bak -E \
+            -e "s|^(  url +\").*\"|\\1${url}\"|" \
+            -e "s|^(  sha256 +\").*\"|\\1${SHA256}\"|" \
+            Formula/set-tf-alias.rb
+          rm -f Formula/set-tf-alias.rb.bak
+
+          git add Formula/set-tf-alias.rb
+          git commit -m "set-tf-alias: bump to ${TAG}"
+          git push -u origin "$branch"
+
+          gh pr create \
+            --title "set-tf-alias: bump to ${TAG}" \
+            --body "Automated bump for set-tf-alias ${TAG}.\nsha256: ${SHA256}" \
+            --base main \
+            --head "$branch"
