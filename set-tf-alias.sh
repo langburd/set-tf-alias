@@ -249,5 +249,18 @@ if [ "$SET_TF_ALIAS_AUTOHOOK" = 1 ]; then
     # shellcheck disable=SC1090,SC2296
     autoload -Uz add-zsh-hook 2>/dev/null || true
     add-zsh-hook chpwd set_tf_alias 2>/dev/null || true
+  elif [ "$__STF_SHELL" = bash ]; then
+    __stf_prompt_hook() {
+      if [ "$PWD" != "${__STF_LAST_PWD-}" ]; then
+        __STF_LAST_PWD=$PWD
+        set_tf_alias
+      fi
+    }
+    # Append to PROMPT_COMMAND, idempotently.
+    case "${PROMPT_COMMAND-}" in
+    *__stf_prompt_hook*) : ;;
+    '') PROMPT_COMMAND='__stf_prompt_hook' ;;
+    *) PROMPT_COMMAND="__stf_prompt_hook; ${PROMPT_COMMAND}" ;;
+    esac
   fi
 fi
