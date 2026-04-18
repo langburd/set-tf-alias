@@ -61,3 +61,18 @@ __stf_find_version_file() {
 __stf_check_lockfile() {
   [ -f .terraform.lock.hcl ] && grep -q 'registry\.opentofu\.org' .terraform.lock.hcl
 }
+
+# Runs `tenv <kind> detect -i -q`. Echoes the resolved version on stdout.
+# On failure, surfaces tenv's stderr and returns non-zero.
+__stf_run_tenv_detect() {
+  local kind=$1 output rc
+  output=$(tenv "$kind" detect -i -q 2>&1)
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    printf '%s\n' "$output" >&2
+    return $rc
+  fi
+  # Output format: "OpenTofu 1.8.5 will be run from this directory."
+  # Extract the second whitespace-separated field portably across bash/zsh.
+  printf '%s\n' "$output" | awk '{print $2}'
+}

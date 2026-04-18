@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Test stub for tenv. Behavior controlled by env vars:
+#   STUB_TENV_VERSION    version string to echo (default: 1.8.5)
+#   STUB_TENV_FAIL       if 1, exit 1 and print an error to stderr
+#   STUB_TENV_INSTALLING if 1, print "installing" line to stderr before success
+
+set -eu
+
+if [ "${STUB_TENV_FAIL:-0}" = 1 ]; then
+  echo "tenv: stub failure" >&2
+  exit 1
+fi
+
+if [ "${STUB_TENV_INSTALLING:-0}" = 1 ]; then
+  echo "tenv: installing version ${STUB_TENV_VERSION:-1.8.5}" >&2
+fi
+
+case "${1:-}" in
+tofu)
+  printf 'OpenTofu %s will be run from this directory.\n' "${STUB_TENV_VERSION:-1.8.5}"
+  ;;
+tf | terraform)
+  printf 'Terraform %s will be run from this directory.\n' "${STUB_TENV_VERSION:-1.9.0}"
+  ;;
+*)
+  echo "tenv stub: unsupported tool $1" >&2
+  exit 2
+  ;;
+esac
