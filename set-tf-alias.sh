@@ -56,3 +56,8 @@ __stf_find_version_file() {
     [ -z "$dir" ] && dir=/
   done
 }
+
+# Returns 0 if .terraform.lock.hcl in $PWD references registry.opentofu.org.
+__stf_check_lockfile() {
+  [ -f .terraform.lock.hcl ] && grep -q 'registry\.opentofu\.org' .terraform.lock.hcl
+}
