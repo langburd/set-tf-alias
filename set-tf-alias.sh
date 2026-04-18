@@ -38,6 +38,11 @@ fi
 # Detection helpers (private, prefixed __stf_)
 # ---------------------------------------------------------------------------
 
+__stf_debug() {
+  [ "${SET_TF_ALIAS_DEBUG:-0}" = 1 ] || return 0
+  printf '[debug] set_tf_alias: %s\n' "$*" >&2
+}
+
 # Walks up from $PWD to /. Echoes "tofu:<path>" or "tf:<path>" on success.
 # Returns 0 if found, 1 if no version file was found in any ancestor.
 __stf_find_version_file() {
@@ -189,6 +194,7 @@ set_tf_alias() {
   local detect_result kind version_file_path binary version
   local display_path
 
+  __stf_debug "PWD=$PWD"
   detect_result=$(__stf_find_version_file || true)
 
   if [ -n "$detect_result" ]; then
@@ -196,8 +202,10 @@ set_tf_alias() {
     version_file_path=${detect_result#*:}
     display_path=${version_file_path##*/}
     [ "$kind" = "tofu" ] && binary=tofu || binary=terraform
+    __stf_debug "found version file $version_file_path -> $binary"
 
     if command -v tenv >/dev/null 2>&1; then
+      __stf_debug "invoking tenv $kind detect"
       if version=$(__stf_run_tenv_detect "$kind"); then
         __stf_set_aliases "$binary"
         __stf_color green \
@@ -210,25 +218,28 @@ set_tf_alias() {
         return 0
       fi
     else
+      __stf_debug "tenv not on PATH; warning and falling back"
       __stf_warn_tenv_missing
       __stf_set_aliases "$binary"
       return 0
     fi
   fi
 
-  # No version file — try lockfile
+  __stf_debug "no version file; checking lockfile"
   if __stf_check_lockfile; then
+    __stf_debug "lockfile matches opentofu registry"
     __stf_set_aliases tofu
     return 0
   fi
 
-  # No version file, no lockfile — try *.tofu glob
+  __stf_debug "no lockfile match; checking *.tofu glob"
   if __stf_has_tofu_files; then
+    __stf_debug "found *.tofu files"
     __stf_set_aliases tofu
     return 0
   fi
 
-  # Nothing found — unset aliases
+  __stf_debug "nothing found; unsetting aliases"
   __stf_set_aliases ''
 }
 
