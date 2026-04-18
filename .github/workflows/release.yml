@@ -20,16 +20,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute sha256
-        id: sha
-        run: echo "sha256=$(sha256sum set-tf-alias.sh | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body: |
-            sha256: `${{ steps.sha.outputs.sha256 }}`
+
+      - name: Compute sha256 of release tarball
+        id: sha
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          url="https://github.com/langburd/set-tf-alias/archive/refs/tags/${TAG}.tar.gz"
+          curl -fsSL "$url" -o /tmp/release.tar.gz
+          echo "sha256=$(sha256sum /tmp/release.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Open tap PR
         env:
