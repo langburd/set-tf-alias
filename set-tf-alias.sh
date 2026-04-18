@@ -264,3 +264,11 @@ if [ "$SET_TF_ALIAS_AUTOHOOK" = 1 ]; then
     esac
   fi
 fi
+
+# ---------------------------------------------------------------------------
+# Initial invocation (on source). Skipped when autohook is disabled OR the
+# shell is non-interactive.
+# ---------------------------------------------------------------------------
+if [ "$SET_TF_ALIAS_AUTOHOOK" = 1 ] && __stf_is_interactive; then
+  set_tf_alias
+fi
