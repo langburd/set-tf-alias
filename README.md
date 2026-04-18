@@ -100,6 +100,9 @@ pre-commit install
 bats test/bats/
 ```
 
+Open a PR against `main`. Bug reports and feature requests are welcome via
+GitHub Issues.
+
 Maintainer note: for releases, a `HOMEBREW_TAP_TOKEN` secret (PAT with `repo`
 scope on `langburd/homebrew-tap`) must be configured in the repo's Actions
 secrets so the release workflow can open bump PRs.
