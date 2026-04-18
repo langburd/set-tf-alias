@@ -76,3 +76,31 @@ __stf_run_tenv_detect() {
   # Extract the second whitespace-separated field portably across bash/zsh.
   printf '%s\n' "$output" | awk '{print $2}'
 }
+
+# Prints "$2" in the given color, or plain text if output isn't a TTY.
+# $1 = color name (red|green|yellow|cyan), $2 = message.
+__stf_color() {
+  local code
+  case "$1" in
+  red) code='31' ;;
+  green) code='32' ;;
+  yellow) code='33' ;;
+  cyan) code='36' ;;
+  *) code='0' ;;
+  esac
+  if [ -t 1 ] || [ -t 2 ]; then
+    printf '\033[%sm%s\033[0m\n' "$code" "$2"
+  else
+    printf '%s\n' "$2"
+  fi
+}
+
+# Prints a yellow one-shot warning to stderr when tenv is missing but a
+# version file was found. Subsequent calls in the same shell are silent.
+__stf_warn_tenv_missing() {
+  [ "${_SET_TF_ALIAS_TENV_WARNED:-0}" = 1 ] && return 0
+  __stf_color yellow \
+    '⚠ set_tf_alias: tenv not installed — aliasing to system tofu/terraform. Install: https://tofuutils.github.io/tenv/' \
+    >&2
+  _SET_TF_ALIAS_TENV_WARNED=1
+}
