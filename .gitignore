@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# bats temp
+.bats-tmp/
+
+# pre-commit
+.pre-commit-cache/
