@@ -15,21 +15,37 @@ jobs:
   release:
     needs: gate
     runs-on: ubuntu-latest
+    env:
+      REPO_URL: ${{ github.server_url }}/${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Compute sha256
-        id: sha
-        run: echo "sha256=$(sha256sum set-tf-alias.sh | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body: |
-            sha256: `${{ steps.sha.outputs.sha256 }}`
+
+      - name: Compute sha256 of release tarball
+        id: sha
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          url="${REPO_URL}/archive/refs/tags/${TAG}.tar.gz"
+          for i in 1 2 3 4 5; do
+            curl -fsSL "$url" -o /tmp/release.tar.gz && break
+            [ "$i" -lt 5 ] || { echo "Failed to download tarball after 5 attempts"; exit 1; }
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          test -s /tmp/release.tar.gz
+          sha256=$(sha256sum /tmp/release.tar.gz | cut -d' ' -f1)
+          echo "sha256=${sha256}" >> "$GITHUB_OUTPUT"
+          notes="$(gh release view "$TAG" --json body --jq '.body')"$'\n\nsha256: `'"${sha256}"'`'
+          gh release edit "$TAG" --notes "$notes"
 
       - name: Open tap PR
         env:
@@ -45,7 +61,7 @@ jobs:
           branch="bump-set-tf-alias-${TAG}"
           git checkout -b "$branch"
 
-          url="https://github.com/langburd/set-tf-alias/archive/refs/tags/${TAG}.tar.gz"
+          url="${REPO_URL}/archive/refs/tags/${TAG}.tar.gz"
           sed -i.bak -E \
             -e "s|^(  url +\").*\"|\\1${url}\"|" \
             -e "s|^(  sha256 +\").*\"|\\1${SHA256}\"|" \
