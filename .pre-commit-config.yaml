@@ -21,6 +21,10 @@ repos:
     rev: 3.0.0
     hooks:
       - id: shellcheck
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.1-1
+    hooks:
       - id: shfmt
         args: ["--indent", "2"]
 
