@@ -167,3 +167,67 @@ __stf_set_aliases() {
   alias tofu="$bin"
   alias terraform="$bin"
 }
+
+# Returns 0 if at least one *.tofu file exists in $PWD.
+# Handles both shells' no-match behavior: bash leaves the glob literal (caught
+# by `[ -e ]`), zsh would error by default so we scope `nullglob` to the fn.
+__stf_has_tofu_files() {
+  if [ -n "${ZSH_VERSION-}" ]; then
+    setopt localoptions nullglob
+  fi
+  local f
+  for f in ./*.tofu; do
+    [ -e "$f" ] && return 0
+  done
+  return 1
+}
+
+# ---------------------------------------------------------------------------
+# Public orchestrator
+# ---------------------------------------------------------------------------
+set_tf_alias() {
+  local detect_result kind version_file_path binary version
+  local display_path
+
+  detect_result=$(__stf_find_version_file || true)
+
+  if [ -n "$detect_result" ]; then
+    kind=${detect_result%%:*}
+    version_file_path=${detect_result#*:}
+    display_path=${version_file_path##*/}
+    [ "$kind" = "tofu" ] && binary=tofu || binary=terraform
+
+    if command -v tenv >/dev/null 2>&1; then
+      if version=$(__stf_run_tenv_detect "$kind"); then
+        __stf_set_aliases "$binary"
+        __stf_color green \
+          "✓ set_tf_alias: $binary $version (via $display_path)"
+        return 0
+      else
+        __stf_color red \
+          "✗ set_tf_alias: tenv failed to install $binary — aliasing to system $binary" >&2
+        __stf_set_aliases "$binary"
+        return 0
+      fi
+    else
+      __stf_warn_tenv_missing
+      __stf_set_aliases "$binary"
+      return 0
+    fi
+  fi
+
+  # No version file — try lockfile
+  if __stf_check_lockfile; then
+    __stf_set_aliases tofu
+    return 0
+  fi
+
+  # No version file, no lockfile — try *.tofu glob
+  if __stf_has_tofu_files; then
+    __stf_set_aliases tofu
+    return 0
+  fi
+
+  # Nothing found — unset aliases
+  __stf_set_aliases ''
+}
