@@ -5,7 +5,9 @@
 
 # Make a temp workspace per test; cleaned up in teardown.
 setup() {
-  TEST_TMP="$(mktemp -d "${TMPDIR:-/tmp}/stf.XXXXXX")"
+  local _tmpbase="${TMPDIR:-/tmp}"
+  _tmpbase="${_tmpbase%/}"
+  TEST_TMP="$(mktemp -d "$_tmpbase/stf.XXXXXX")"
   export TEST_TMP
   cd "$TEST_TMP" || return 1
 }

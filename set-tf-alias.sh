@@ -33,3 +33,26 @@ if [ "$__STF_SHELL" = bash ] && [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
   unset __STF_SHELL
   return 0
 fi
+
+# ---------------------------------------------------------------------------
+# Detection helpers (private, prefixed __stf_)
+# ---------------------------------------------------------------------------
+
+# Walks up from $PWD to /. Echoes "tofu:<path>" or "tf:<path>" on success.
+# Returns 0 if found, 1 if no version file was found in any ancestor.
+__stf_find_version_file() {
+  local dir=$PWD
+  while :; do
+    if [ -f "$dir/.opentofu-version" ]; then
+      printf 'tofu:%s/.opentofu-version\n' "$dir"
+      return 0
+    fi
+    if [ -f "$dir/.terraform-version" ]; then
+      printf 'tf:%s/.terraform-version\n' "$dir"
+      return 0
+    fi
+    [ "$dir" = "/" ] && return 1
+    dir=${dir%/*}
+    [ -z "$dir" ] && dir=/
+  done
+}
