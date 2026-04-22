@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Shared helpers for set-tf-alias bats suite.
 
 # Absolute path to the library under test.
@@ -7,21 +8,21 @@
 setup() {
   local _tmpbase="${TMPDIR:-/tmp}"
   _tmpbase="${_tmpbase%/}"
-  TEST_TMP="$(mktemp -d "$_tmpbase/stf.XXXXXX")"
+  TEST_TMP="$(mktemp -d "${_tmpbase}/stf.XXXXXX")"
   export TEST_TMP
-  cd "$TEST_TMP" || return 1
+  cd "${TEST_TMP}" || return 1
 }
 
 teardown() {
   cd /
-  rm -rf "$TEST_TMP"
+  rm -rf "${TEST_TMP}"
 }
 
 # Source the library in a subshell with a clean env.
 stf_source_bash() {
-  bash -c "set -e; cd '$TEST_TMP'; source '$STF_LIB'; $*"
+  bash -c "set -e; cd '${TEST_TMP}'; source '${STF_LIB}'; $*"
 }
 
 stf_source_zsh() {
-  zsh -c "set -e; cd '$TEST_TMP'; source '$STF_LIB'; $*"
+  zsh -c "set -e; cd '${TEST_TMP}'; source '${STF_LIB}'; $*"
 }

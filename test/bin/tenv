@@ -6,12 +6,12 @@
 
 set -eu
 
-if [ "${STUB_TENV_FAIL:-0}" = 1 ]; then
+if [[ "${STUB_TENV_FAIL:-0}" = 1 ]]; then
   echo "tenv: stub failure" >&2
   exit 1
 fi
 
-if [ "${STUB_TENV_INSTALLING:-0}" = 1 ]; then
+if [[ "${STUB_TENV_INSTALLING:-0}" = 1 ]]; then
   echo "tenv: installing version ${STUB_TENV_VERSION:-1.8.5}" >&2
 fi
 
@@ -23,7 +23,7 @@ tf | terraform)
   printf 'Terraform %s will be run from this directory.\n' "${STUB_TENV_VERSION:-1.9.0}"
   ;;
 *)
-  echo "tenv stub: unsupported tool $1" >&2
+  echo "tenv stub: unsupported tool ${1}" >&2
   exit 2
   ;;
 esac
