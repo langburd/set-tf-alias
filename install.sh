@@ -44,12 +44,12 @@ rc_file_for() {
 
 main() {
   local shell rc install_dir install_path source_line
-  shell=$(set -e; detect_shell)
+  shell=$(detect_shell)
   [[ "${shell}" = bash ]] && check_bash_version
 
   install_dir="${XDG_DATA_HOME:-${HOME}/.local/share}/set-tf-alias"
   install_path="${install_dir}/set-tf-alias.sh"
-  rc=$(set -e; rc_file_for "${shell}")
+  rc=$(rc_file_for "${shell}")
 
   mkdir -p "${install_dir}"
   if ! curl -fsSL "${STF_URL}" -o "${install_path}"; then

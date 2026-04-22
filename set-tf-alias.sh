@@ -86,7 +86,7 @@ __stf_run_tenv_detect() {
 # $1 = color name (red|green|yellow|cyan), $2 = message.
 __stf_color() {
   local code
-  case "$1" in
+  case "${1}" in
   red) code='31' ;;
   green) code='32' ;;
   yellow) code='33' ;;
@@ -94,9 +94,9 @@ __stf_color() {
   *) code='0' ;;
   esac
   if [[ -t 1 ]] || [[ -t 2 ]]; then
-    printf '\033[%sm%s\033[0m\n' "${code}" "$2"
+    printf '\033[%sm%s\033[0m\n' "${code}" "${2}"
   else
-    printf '%s\n' "$2"
+    printf '%s\n' "${2}"
   fi
 }
 
@@ -224,7 +224,7 @@ set_tf_alias() {
 : "${SET_TF_ALIAS_AUTOHOOK:=1}"
 
 __stf_is_interactive() {
-  case "$-" in
+  case "${-}" in
   *i*) return 0 ;;
   *) return 1 ;;
   esac

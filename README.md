@@ -75,7 +75,7 @@ echo 'source ~/.local/share/set-tf-alias/set-tf-alias.sh' >> ~/.zshrc
 2. If no version file, check `.terraform.lock.hcl` in `$PWD`:
    `registry.opentofu.org` → `tofu`.
 3. If no lockfile match, check for `*.tofu` files in `$PWD` → `tofu`.
-4. Otherwise unset the aliases and let `$PATH` decide.
+4. Otherwise, alias to the system `terraform` binary.
 
 ## Requirements
 

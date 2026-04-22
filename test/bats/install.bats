@@ -74,3 +74,15 @@ teardown() {
   [ "$status" -ne 0 ]
   [[ "$output" == *"supports bash >= 4 and zsh only"* ]]
 }
+
+@test "rc_file_for: unsupported shell exits non-zero with error message" {
+  local tmpfile
+  tmpfile=$(mktemp)
+  # Strip the trailing `main "$@"` call so we can invoke rc_file_for directly.
+  sed '$d' "${BATS_TEST_DIRNAME}/../../install.sh" >"$tmpfile"
+  echo 'rc_file_for fish' >>"$tmpfile"
+  run bash "$tmpfile"
+  rm -f "$tmpfile"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"unsupported shell"* ]]
+}
