@@ -14,9 +14,10 @@
 # ---------------------------------------------------------------------------
 # Shell detection
 # ---------------------------------------------------------------------------
-if [[ -n "${ZSH_VERSION-}" ]]; then
+# shellcheck disable=SC2292 # [ ] required here: [[ ]] is a bash/zsh extension and this block runs before the shell is known
+if [ -n "${ZSH_VERSION-}" ]; then
   __STF_SHELL=zsh
-elif [[ -n "${BASH_VERSION-}" ]]; then
+elif [ -n "${BASH_VERSION-}" ]; then
   __STF_SHELL=bash
 else
   printf 'set-tf-alias.sh: requires bash >= 4 or zsh; refusing to load under %s\n' "$0" >&2
@@ -111,7 +112,7 @@ __stf_warn_tenv_missing() {
 }
 
 # Sets the full tf*/tofu/terraform alias set to the named binary.
-# If $1 is empty, unsets all aliases (so $PATH decides).
+# Pass an empty $1 to unset all aliases and let $PATH decide instead.
 # shellcheck disable=SC2139
 __stf_set_aliases() {
   local bin=$1

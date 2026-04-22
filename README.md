@@ -2,7 +2,7 @@
 
 Portable bash/zsh shell library that auto-switches `tf`, `tofu`, and
 `terraform` aliases based on `.opentofu-version` / `.terraform-version` files
-and [`tenv`](https://tofuutils.github.io/tenv/) integration. Works on macOS
+and [`tenv`](https://tofuutils.github.io/tenv/) as the required version manager. Works on macOS
 and Linux under bash ≥ 4 and zsh ≥ 5.
 
 ## What it does
@@ -80,8 +80,8 @@ echo 'source ~/.local/share/set-tf-alias/set-tf-alias.sh' >> ~/.zshrc
 ## Requirements
 
 - bash ≥ 4 **or** zsh ≥ 5.
-- [`tenv`](https://tofuutils.github.io/tenv/) recommended (the library works
-  without it, but won't install pinned versions automatically).
+- [`tenv`](https://tofuutils.github.io/tenv/) **required** as the
+  Terraform/OpenTofu version manager.
 
 ## Troubleshooting
 
