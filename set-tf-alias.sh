@@ -214,8 +214,8 @@ set_tf_alias() {
     return 0
   fi
 
-  __stf_debug "nothing found; unsetting aliases"
-  __stf_set_aliases ''
+  __stf_debug "nothing found; defaulting to terraform"
+  __stf_set_aliases terraform
 }
 
 # ---------------------------------------------------------------------------
