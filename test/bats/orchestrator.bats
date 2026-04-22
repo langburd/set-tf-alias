@@ -54,15 +54,15 @@ teardown() {
   [[ "$output" == *"alias tf='tofu'"* ]]
 }
 
-@test "nothing found: aliases unset, no output" {
+@test "nothing found: defaults to terraform alias, no output" {
   run bash -c "
     shopt -s expand_aliases
     source '$STF_LIB'
-    alias tf=preexisting
     SET_TF_ALIAS_AUTOHOOK=0 set_tf_alias 2>&1
-    alias tf 2>&1 || echo 'unset'
+    alias tf
   "
-  [[ "$output" == *"unset"* ]]
+  [[ "$output" == *"alias tf='terraform'"* ]]
+  [[ "$output" != *"set_tf_alias:"* ]]
 }
 
 @test "tenv missing: warn once, fall back to bare binary" {
