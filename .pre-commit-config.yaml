@@ -13,6 +13,8 @@ repos:
       - id: check-vcs-permalinks
       - id: forbid-submodules
       - id: no-commit-to-branch
+        stages:
+          - pre-commit
         args:
           - --branch
           - main
