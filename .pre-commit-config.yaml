@@ -1,3 +1,4 @@
+---
 default_stages:
   - pre-commit
 fail_fast: false
@@ -22,6 +23,11 @@ repos:
       - id: check-yaml
       - id: destroyed-symlinks
       - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+            CLAUDE\.md|
+            \.claude/skills.*
+          )$
       - id: fix-byte-order-marker
       - id: trailing-whitespace
         args:
