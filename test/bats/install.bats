@@ -13,7 +13,7 @@ setup() {
   mkdir -p "$TEST_TMP/bin"
   cat >"$TEST_TMP/bin/curl" <<'EOF'
 #!/usr/bin/env bash
-# Minimal curl stub: writes the local lib copy when asked for set-tf-alias.sh.
+# Minimal curl stub: handles GitHub API and raw file requests.
 output_file=""
 prev=""
 for arg in "$@"; do
@@ -24,6 +24,10 @@ for arg in "$@"; do
 done
 for arg in "$@"; do
   case "$arg" in
+    *releases/latest*)
+      printf '{"tag_name":"v0.1.2"}'
+      exit 0
+      ;;
     *set-tf-alias.sh*)
       if [ -n "$output_file" ]; then
         cat "${STF_INSTALLER_SOURCE:?}/set-tf-alias.sh" >"$output_file"

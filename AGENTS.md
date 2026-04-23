@@ -13,6 +13,12 @@ Run `pre-commit run --all-files && bats test/bats/` before marking any change co
 
 New contributors must run `pre-commit install` before their first commit — otherwise shellcheck, shfmt, and markdownlint hooks won't run locally.
 
+## Test Infrastructure
+
+**`install.bats` curl stub:** `test/bats/install.bats` replaces `curl` with a local stub in its `setup()` block that handles specific URL patterns. If `install.sh` is modified to call new URLs, the stub must be updated to handle those patterns — otherwise all install tests will fail with a non-zero exit.
+
+**`test/bin/tenv` stub:** A committed stub for `tenv`, placed on `PATH` during tests. Behavior is controlled by env vars: `STUB_TENV_VERSION` (version string to echo), `STUB_TENV_FAIL` (exit 1 on tenv calls), `STUB_TENV_INSTALLING` (simulate install output). If `set-tf-alias.sh` calls `tenv` with new subcommands or argument patterns, this stub must be updated.
+
 ## Shell Code Rules
 
 - Target: bash 4+ and zsh 5+. This is **not** POSIX sh.
