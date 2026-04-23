@@ -39,9 +39,9 @@ fi
 # Version
 # ---------------------------------------------------------------------------
 if [[ "${__STF_SHELL}" = zsh ]]; then
-  __stf_version_file="${0%/*}/version"
+  __stf_version_file="${0%/*}/version.txt"
 else
-  __stf_version_file="${BASH_SOURCE[0]%/*}/version"
+  __stf_version_file="${BASH_SOURCE[0]%/*}/version.txt"
 fi
 if [[ -r "${__stf_version_file}" ]]; then
   read -r SET_TF_ALIAS_VERSION <"${__stf_version_file}"

@@ -13,19 +13,25 @@ setup() {
   mkdir -p "$TEST_TMP/bin"
   cat >"$TEST_TMP/bin/curl" <<'EOF'
 #!/usr/bin/env bash
-# Minimal curl stub: handles GitHub API and raw file requests.
+# Minimal curl stub: handles releases/latest/download redirects and raw file requests.
 output_file=""
+write_out_format=""
 prev=""
 for arg in "$@"; do
-  if [ "$prev" = "-o" ]; then
-    output_file="$arg"
-  fi
+  if [ "$prev" = "-o" ]; then output_file="$arg"; fi
+  if [ "$prev" = "--write-out" ] || [ "$prev" = "-w" ]; then write_out_format="$arg"; fi
   prev="$arg"
 done
 for arg in "$@"; do
   case "$arg" in
-    *releases/latest*)
-      printf '{"tag_name":"v0.1.2"}'
+    *releases/latest/download/set-tf-alias.sh*)
+      effective_url="https://github.com/${STUB_STF_REPO:-langburd/set-tf-alias}/releases/download/v0.1.2/set-tf-alias.sh"
+      if [ -n "$output_file" ]; then
+        cat "${STF_INSTALLER_SOURCE:?}/set-tf-alias.sh" >"$output_file"
+      else
+        cat "${STF_INSTALLER_SOURCE:?}/set-tf-alias.sh"
+      fi
+      [ "$write_out_format" = '%{url_effective}' ] && printf '%s' "$effective_url"
       exit 0
       ;;
     *set-tf-alias.sh*)
@@ -34,6 +40,7 @@ for arg in "$@"; do
       else
         cat "${STF_INSTALLER_SOURCE:?}/set-tf-alias.sh"
       fi
+      [ "$write_out_format" = '%{url_effective}' ] && printf '%s' "$arg"
       exit 0
       ;;
   esac
@@ -59,8 +66,8 @@ teardown() {
   [ "$status" -eq 0 ]
   [ -f "$HOME/.local/share/set-tf-alias/set-tf-alias.sh" ]
   grep -q 'source.*set-tf-alias.sh' "$HOME/.zshrc"
-  [ -f "$HOME/.local/share/set-tf-alias/version" ]
-  [ "$(cat "$HOME/.local/share/set-tf-alias/version")" = "v0.1.2" ]
+  [ -f "$HOME/.local/share/set-tf-alias/version.txt" ]
+  [ "$(cat "$HOME/.local/share/set-tf-alias/version.txt")" = "0.1.2" ]
 }
 
 @test "is idempotent: re-run does not duplicate source line" {

@@ -4,19 +4,18 @@
 # installs it to the XDG data dir, and appends a source line to the user's rc.
 
 set -eu
-shopt -s inherit_errexit  # requires bash 4.4+
+shopt -s inherit_errexit 2>/dev/null || true  # bash 4.4+; silently skipped, version checked below
 
 red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
 yellow() { printf '\033[33m%s\033[0m\n' "$*" >&2; }
 
 STF_REPO="${STF_REPO:-langburd/set-tf-alias}"
-if [[ -z "${STF_TAG:-}" ]]; then
-  _stf_json=$(curl -fsSL "https://api.github.com/repos/${STF_REPO}/releases/latest")
-  STF_TAG=$(awk -F'"' '/"tag_name"/{print $4; exit}' <<<"${_stf_json}")
-  [[ -n "${STF_TAG}" ]] || { red "set-tf-alias: could not determine latest release tag"; exit 1; }
+if [[ -n "${STF_TAG:-}" ]]; then
+  STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
+else
+  STF_URL="https://github.com/${STF_REPO}/releases/latest/download/set-tf-alias.sh"
 fi
-STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
 
 detect_shell() {
   case "${SHELL:-}" in
@@ -60,12 +59,17 @@ main() {
   rc=$(rc_file_for "${shell}")
 
   mkdir -p "${install_dir}"
-  if ! curl -fsSL "${STF_URL}" -o "${install_path}"; then
+  local effective_url
+  if ! effective_url=$(curl -fsSL "${STF_URL}" -o "${install_path}" --write-out '%{url_effective}'); then
     red "set-tf-alias: failed to download ${STF_URL}"
     exit 1
   fi
   chmod 0644 "${install_path}"
-  printf '%s\n' "${STF_TAG}" >"${install_dir}/version"
+  # Extract tag from effective URL when not explicitly pinned via $STF_TAG
+  if [[ -z "${STF_TAG:-}" ]]; then
+    STF_TAG=$(printf '%s' "${effective_url}" | sed 's|.*/releases/download/\([^/]*\)/.*|\1|')
+  fi
+  [[ -n "${STF_TAG:-}" ]] && printf '%s\n' "${STF_TAG#v}" >"${install_dir}/version.txt"
 
   source_line="source \"${install_path}\""
 

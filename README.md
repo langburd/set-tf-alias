@@ -44,14 +44,14 @@ source "$(brew --prefix)/share/set-tf-alias/set-tf-alias.sh"
 Bash users: ensure bash ≥ 4 with `brew install bash`. Apple's default bash 3.2
 is not supported.
 
-### `curl | sh`
+### `curl | bash`
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/langburd/set-tf-alias/main/install.sh | sh
+curl -fsSL https://github.com/langburd/set-tf-alias/releases/latest/download/install.sh | bash
 ```
 
-The installer fetches the latest release, downloads it to `~/.local/share/set-tf-alias/set-tf-alias.sh`, and appends a source line to
-your rc. It's idempotent — re-run it to upgrade.
+The installer downloads the library to `~/.local/share/set-tf-alias/set-tf-alias.sh`
+and appends a source line to your rc. It's idempotent — re-run it to upgrade.
 
 ### Manual
 
