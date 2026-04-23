@@ -12,3 +12,7 @@
 
 # pre-commit
 .pre-commit-cache/
+
+# claude
+.claude/settings.local.json
+docs/superpowers/**

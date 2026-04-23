@@ -103,9 +103,7 @@ bats test/bats/
 Open a PR against `main`. Bug reports and feature requests are welcome via
 GitHub Issues.
 
-Maintainer note: for releases, a `HOMEBREW_TAP_TOKEN` secret (PAT with `repo`
-scope on `langburd/homebrew-tap`) must be configured in the repo's Actions
-secrets so the release workflow can open bump PRs.
+**Releasing:** Releases are automated via release-please. Merge any PR to `main` with conventional commits (`feat:`, `fix:`, etc.) and release-please will open a Release PR bumping `version.txt` and `CHANGELOG.md`. Merging the Release PR creates the tag, which triggers the release workflow (GitHub Release + Homebrew tap PR). A `HOMEBREW_TAP_TOKEN` secret (PAT with `repo` scope on `langburd/homebrew-tap`) must be configured in Actions secrets.
 
 ## License
 
