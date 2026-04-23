@@ -11,7 +11,7 @@ Run `pre-commit run --all-files && bats test/bats/` before marking any change co
 
 ## Setup
 
-New contributors must run `pre-commit install` before their first commit — otherwise shellcheck, shfmt, and markdownlint hooks won't run locally.
+New contributors must run `pre-commit install && pre-commit install -t commit-msg` before their first commit — otherwise shellcheck, shfmt, markdownlint, and conventional-commit hooks won't run locally.
 
 ## Test Infrastructure
 
