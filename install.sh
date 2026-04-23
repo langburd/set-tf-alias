@@ -4,9 +4,13 @@
 # and appends a source line to the user's rc.
 
 set -eu
+shopt -s inherit_errexit
 
 STF_REPO="${STF_REPO:-langburd/set-tf-alias}"
-STF_TAG="${STF_TAG:-v0.1.0}"
+if [[ -z "${STF_TAG:-}" ]]; then
+  _stf_json=$(curl -fsSL "https://api.github.com/repos/${STF_REPO}/releases/latest")
+  STF_TAG=$(awk -F'"' '/"tag_name"/{print $4; exit}' <<<"${_stf_json}")
+fi
 STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
 
 red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
@@ -38,7 +42,10 @@ rc_file_for() {
   case "${1}" in
   zsh) echo "${HOME}/.zshrc" ;;
   bash) echo "${HOME}/.bashrc" ;;
-  *) red "set-tf-alias: unsupported shell: ${1}"; exit 1 ;;
+  *)
+    red "set-tf-alias: unsupported shell: ${1}"
+    exit 1
+    ;;
   esac
 }
 
@@ -57,6 +64,7 @@ main() {
     exit 1
   fi
   chmod 0644 "${install_path}"
+  printf '%s\n' "${STF_TAG}" >"${install_dir}/version"
 
   source_line="source \"${install_path}\""
 

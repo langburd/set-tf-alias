@@ -47,7 +47,7 @@ is not supported.
 ### `curl | sh`
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/langburd/set-tf-alias/v0.1.0/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/langburd/set-tf-alias/main/install.sh | sh
 ```
 
 The installer downloads the library at a pinned tag, installs it to

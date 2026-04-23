@@ -36,6 +36,20 @@ if [[ "${__STF_SHELL}" = bash ]] && [[ "${BASH_VERSINFO[0]:-0}" -lt 4 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Version
+# ---------------------------------------------------------------------------
+if [[ "${__STF_SHELL}" = zsh ]]; then
+  __stf_version_file="${0%/*}/version"
+else
+  __stf_version_file="${BASH_SOURCE[0]%/*}/version"
+fi
+if [[ -r "${__stf_version_file}" ]]; then
+  read -r SET_TF_ALIAS_VERSION <"${__stf_version_file}"
+  export SET_TF_ALIAS_VERSION
+fi
+unset __stf_version_file
+
+# ---------------------------------------------------------------------------
 # Detection helpers (private, prefixed __stf_)
 # ---------------------------------------------------------------------------
 
