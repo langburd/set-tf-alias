@@ -59,6 +59,8 @@ teardown() {
   [ "$status" -eq 0 ]
   [ -f "$HOME/.local/share/set-tf-alias/set-tf-alias.sh" ]
   grep -q 'source.*set-tf-alias.sh' "$HOME/.zshrc"
+  [ -f "$HOME/.local/share/set-tf-alias/version" ]
+  [ "$(cat "$HOME/.local/share/set-tf-alias/version")" = "v0.1.2" ]
 }
 
 @test "is idempotent: re-run does not duplicate source line" {

@@ -50,8 +50,7 @@ is not supported.
 curl -fsSL https://raw.githubusercontent.com/langburd/set-tf-alias/main/install.sh | sh
 ```
 
-The installer downloads the library at a pinned tag, installs it to
-`~/.local/share/set-tf-alias/set-tf-alias.sh`, and appends a source line to
+The installer fetches the latest release, downloads it to `~/.local/share/set-tf-alias/set-tf-alias.sh`, and appends a source line to
 your rc. It's idempotent — re-run it to upgrade.
 
 ### Manual

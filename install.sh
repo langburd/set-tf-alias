@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 # set-tf-alias installer.
-# Downloads set-tf-alias.sh at a pinned tag, installs it to the XDG data dir,
-# and appends a source line to the user's rc.
+# Downloads set-tf-alias.sh at the latest release tag (or $STF_TAG if set),
+# installs it to the XDG data dir, and appends a source line to the user's rc.
 
 set -eu
-shopt -s inherit_errexit
+shopt -s inherit_errexit  # requires bash 4.4+
+
+red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
+green() { printf '\033[32m%s\033[0m\n' "$*"; }
+yellow() { printf '\033[33m%s\033[0m\n' "$*" >&2; }
 
 STF_REPO="${STF_REPO:-langburd/set-tf-alias}"
 if [[ -z "${STF_TAG:-}" ]]; then
   _stf_json=$(curl -fsSL "https://api.github.com/repos/${STF_REPO}/releases/latest")
   STF_TAG=$(awk -F'"' '/"tag_name"/{print $4; exit}' <<<"${_stf_json}")
+  [[ -n "${STF_TAG}" ]] || { red "set-tf-alias: could not determine latest release tag"; exit 1; }
 fi
 STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
-
-red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
-green() { printf '\033[32m%s\033[0m\n' "$*"; }
-yellow() { printf '\033[33m%s\033[0m\n' "$*" >&2; }
 
 detect_shell() {
   case "${SHELL:-}" in
