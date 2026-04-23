@@ -3,9 +3,7 @@
 include:
   - "**/*.yaml"
   - "**/*.yml"
-exclude:
-  - deployments/**/helm-charts/**/*
-  - deployments/cloudintelligence-core/files/*
+exclude: []
 formatter:
   eof_newline: true
   force_array_style: block
