@@ -11,7 +11,24 @@ Run `pre-commit run --all-files && bats test/bats/` before marking any change co
 
 ## Setup
 
-New contributors must run `pre-commit install` before their first commit — otherwise shellcheck, shfmt, and markdownlint hooks won't run locally.
+New contributors must run `pre-commit install && pre-commit install -t commit-msg` before their first commit — otherwise shellcheck, shfmt, markdownlint, and conventional-commit hooks won't run locally.
+
+## Test Infrastructure
+
+**`install.bats` curl stub:** `test/bats/install.bats` replaces `curl` with a local stub in its `setup()` block that handles specific URL patterns. If `install.sh` is modified to call new URLs, the stub must be updated to handle those patterns — otherwise all install tests will fail with a non-zero exit.
+
+**`test/bin/tenv` stub:** A committed stub for `tenv`, placed on `PATH` during tests. Behavior is controlled by env vars: `STUB_TENV_VERSION` (version string to echo), `STUB_TENV_FAIL` (exit 1 on tenv calls), `STUB_TENV_INSTALLING` (simulate install output). If `set-tf-alias.sh` calls `tenv` with new subcommands or argument patterns, this stub must be updated.
+
+## Version Files
+
+Both version files are named `version.txt` and contain a bare version string without the `v` prefix (e.g. `0.1.2`):
+
+| File | Location | Content | Managed by |
+| --- | --- | --- | --- |
+| `version.txt` | repo root | `0.1.2` | release-please (auto-bumped on release) |
+| `version.txt` | `~/.local/share/set-tf-alias/version.txt` (installed) | `0.1.2` | `install.sh` (written at install time) |
+
+`SET_TF_ALIAS_VERSION` is exported from the installed `version.txt` and has no `v` prefix.
 
 ## Shell Code Rules
 

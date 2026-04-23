@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 # set-tf-alias installer.
-# Downloads set-tf-alias.sh at a pinned tag, installs it to the XDG data dir,
-# and appends a source line to the user's rc.
+# Downloads set-tf-alias.sh at the latest release tag (or $STF_TAG if set),
+# installs it to the XDG data dir, and appends a source line to the user's rc.
 
 set -eu
-
-STF_REPO="${STF_REPO:-langburd/set-tf-alias}"
-STF_TAG="${STF_TAG:-v0.1.0}"
-STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
+shopt -s inherit_errexit 2>/dev/null || true # bash 4.4+; silently skipped, version checked below
 
 red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
 yellow() { printf '\033[33m%s\033[0m\n' "$*" >&2; }
+
+STF_REPO="${STF_REPO:-langburd/set-tf-alias}"
+if [[ -n "${STF_TAG:-}" ]]; then
+  STF_URL="https://raw.githubusercontent.com/${STF_REPO}/${STF_TAG}/set-tf-alias.sh"
+else
+  STF_URL="https://github.com/${STF_REPO}/releases/latest/download/set-tf-alias.sh"
+fi
 
 detect_shell() {
   case "${SHELL:-}" in
@@ -38,7 +42,10 @@ rc_file_for() {
   case "${1}" in
   zsh) echo "${HOME}/.zshrc" ;;
   bash) echo "${HOME}/.bashrc" ;;
-  *) red "set-tf-alias: unsupported shell: ${1}"; exit 1 ;;
+  *)
+    red "set-tf-alias: unsupported shell: ${1}"
+    exit 1
+    ;;
   esac
 }
 
@@ -52,11 +59,18 @@ main() {
   rc=$(rc_file_for "${shell}")
 
   mkdir -p "${install_dir}"
-  if ! curl -fsSL "${STF_URL}" -o "${install_path}"; then
+  local effective_url
+  if ! effective_url=$(curl -fsSL "${STF_URL}" -o "${install_path}" --write-out '%{url_effective}'); then
     red "set-tf-alias: failed to download ${STF_URL}"
     exit 1
   fi
   chmod 0644 "${install_path}"
+  # Extract tag from effective URL when not explicitly pinned via $STF_TAG
+  if [[ -z "${STF_TAG:-}" ]]; then
+    STF_TAG=$(printf '%s' "${effective_url}" | sed 's|.*/releases/download/\([^/]*\)/.*|\1|')
+    [[ "${STF_TAG}" =~ ^v[0-9] ]] || STF_TAG=""
+  fi
+  [[ -n "${STF_TAG:-}" ]] && printf '%s\n' "${STF_TAG#v}" >"${install_dir}/version.txt"
 
   source_line="source \"${install_path}\""
 

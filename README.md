@@ -44,15 +44,16 @@ source "$(brew --prefix)/share/set-tf-alias/set-tf-alias.sh"
 Bash users: ensure bash ≥ 4 with `brew install bash`. Apple's default bash 3.2
 is not supported.
 
-### `curl | sh`
+### `curl | bash`
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/langburd/set-tf-alias/v0.1.0/install.sh | sh
+curl -fsSL https://github.com/langburd/set-tf-alias/releases/latest/download/install.sh | bash
 ```
 
-The installer downloads the library at a pinned tag, installs it to
-`~/.local/share/set-tf-alias/set-tf-alias.sh`, and appends a source line to
-your rc. It's idempotent — re-run it to upgrade.
+The installer downloads the library to `~/.local/share/set-tf-alias/set-tf-alias.sh`
+and appends a source line to your rc. It's idempotent — re-run it to upgrade.
+
+To pin to a specific version: `STF_TAG=v0.1.2 bash <(curl -fsSL ...)`
 
 ### Manual
 
@@ -96,16 +97,14 @@ Paste the output in a GitHub issue.
 ```bash
 git clone https://github.com/langburd/set-tf-alias.git
 cd set-tf-alias
-pre-commit install
+pre-commit install && pre-commit install -t commit-msg
 bats test/bats/
 ```
 
 Open a PR against `main`. Bug reports and feature requests are welcome via
 GitHub Issues.
 
-Maintainer note: for releases, a `HOMEBREW_TAP_TOKEN` secret (PAT with `repo`
-scope on `langburd/homebrew-tap`) must be configured in the repo's Actions
-secrets so the release workflow can open bump PRs.
+**Releasing:** Releases are automated via release-please. Merge any PR to `main` with conventional commits (`feat:`, `fix:`, etc.) and release-please will open a Release PR bumping `version.txt` and `CHANGELOG.md`. Merging the Release PR creates the tag, which triggers the release workflow (GitHub Release + Homebrew tap PR). A `HOMEBREW_TAP_TOKEN` secret (PAT with `repo` scope on `langburd/homebrew-tap`) must be configured in Actions secrets.
 
 ## License
 
