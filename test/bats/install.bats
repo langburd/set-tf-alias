@@ -25,7 +25,7 @@ done
 for arg in "$@"; do
   case "$arg" in
     *releases/latest/download/set-tf-alias.sh*)
-      effective_url="https://github.com/${STUB_STF_REPO:-langburd/set-tf-alias}/releases/download/v0.1.2/set-tf-alias.sh"
+      effective_url="https://github.com/${STUB_STF_REPO:-langburd/set-tf-alias}/releases/download/${STUB_STF_TAG:-v0.1.2}/set-tf-alias.sh"
       if [ -n "$output_file" ]; then
         cat "${STF_INSTALLER_SOURCE:?}/set-tf-alias.sh" >"$output_file"
       else
@@ -67,7 +67,18 @@ teardown() {
   [ -f "$HOME/.local/share/set-tf-alias/set-tf-alias.sh" ]
   grep -q 'source.*set-tf-alias.sh' "$HOME/.zshrc"
   [ -f "$HOME/.local/share/set-tf-alias/version.txt" ]
-  [ "$(cat "$HOME/.local/share/set-tf-alias/version.txt")" = "0.1.2" ]
+  local tag="${STUB_STF_TAG:-v0.1.2}"
+  [ "$(cat "$HOME/.local/share/set-tf-alias/version.txt")" = "${tag#v}" ]
+}
+
+@test "STF_TAG pin: uses raw URL and writes version.txt from tag" {
+  # shellcheck disable=SC2030,SC2031
+  export SHELL=/bin/zsh
+  touch "$HOME/.zshrc"
+  run env STF_TAG=v0.1.0 bash "${BATS_TEST_DIRNAME}/../../install.sh"
+  [ "$status" -eq 0 ]
+  [ -f "$HOME/.local/share/set-tf-alias/version.txt" ]
+  [ "$(cat "$HOME/.local/share/set-tf-alias/version.txt")" = "0.1.0" ]
 }
 
 @test "is idempotent: re-run does not duplicate source line" {

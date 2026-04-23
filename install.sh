@@ -4,7 +4,7 @@
 # installs it to the XDG data dir, and appends a source line to the user's rc.
 
 set -eu
-shopt -s inherit_errexit 2>/dev/null || true  # bash 4.4+; silently skipped, version checked below
+shopt -s inherit_errexit 2>/dev/null || true # bash 4.4+; silently skipped, version checked below
 
 red() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
@@ -68,6 +68,7 @@ main() {
   # Extract tag from effective URL when not explicitly pinned via $STF_TAG
   if [[ -z "${STF_TAG:-}" ]]; then
     STF_TAG=$(printf '%s' "${effective_url}" | sed 's|.*/releases/download/\([^/]*\)/.*|\1|')
+    [[ "${STF_TAG}" =~ ^v[0-9] ]] || STF_TAG=""
   fi
   [[ -n "${STF_TAG:-}" ]] && printf '%s\n' "${STF_TAG#v}" >"${install_dir}/version.txt"
 

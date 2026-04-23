@@ -53,6 +53,8 @@ curl -fsSL https://github.com/langburd/set-tf-alias/releases/latest/download/ins
 The installer downloads the library to `~/.local/share/set-tf-alias/set-tf-alias.sh`
 and appends a source line to your rc. It's idempotent — re-run it to upgrade.
 
+To pin to a specific version: `STF_TAG=v0.1.2 bash <(curl -fsSL ...)`
+
 ### Manual
 
 ```bash
@@ -95,7 +97,7 @@ Paste the output in a GitHub issue.
 ```bash
 git clone https://github.com/langburd/set-tf-alias.git
 cd set-tf-alias
-pre-commit install
+pre-commit install && pre-commit install -t commit-msg
 bats test/bats/
 ```
 
