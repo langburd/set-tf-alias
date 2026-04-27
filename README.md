@@ -13,6 +13,7 @@ invokes `tenv` to install and activate the pinned version, and points `tf`,
 `tofu`, and `terraform` at the right binary. When no version file is present,
 it falls back to reading `.terraform.lock.hcl` for the provider registry,
 then to the presence of `*.tofu` files in the current directory.
+Read more about the problem this solves on [LinkedIn](https://www.linkedin.com/posts/langburd_devops-terraform-opentofu-share-7453082282162081793-HVvQ/).
 
 ## Demo
 
@@ -25,6 +26,39 @@ $ cd ../legacy-terraform-project
 ✓ set_tf_alias: terraform 1.5.7 (via .terraform-version)
 $ tf plan          # runs terraform 1.5.7
 ```
+
+## Aliases
+
+All aliases point to whichever binary was detected (`terraform`, `tofu`, or the `tenv`-managed version).
+
+| Alias | Expands to |
+| --- | --- |
+| `tf` | `<bin>` |
+| `terraform` | `<bin>` |
+| `tofu` | `<bin>` |
+| `tfa` | `<bin> apply` |
+| `tfaa` | `<bin> apply -auto-approve` |
+| `tfat` | `<bin> apply -target` |
+| `tfc` | `<bin> console` |
+| `tfd` | `<bin> destroy` |
+| `tfdt` | `<bin> destroy -target` |
+| `tff` | `<bin> fmt` |
+| `tffr` | `<bin> fmt -recursive` |
+| `tfg` | `<bin> get` |
+| `tfi` | `<bin> init` |
+| `tfim` | `<bin> init -migrate-state` |
+| `tfir` | `<bin> init -reconfigure` |
+| `tfiu` | `<bin> init -upgrade` |
+| `tfo` | `<bin> output` |
+| `tfp` | `<bin> plan` |
+| `tfpsum` | `<bin> plan \| grep -E '(will\|must) be'` |
+| `tfpt` | `<bin> plan -target` |
+| `tfs` | `<bin> state` |
+| `tfsh` | `<bin> show` |
+| `tft` | `<bin> test` |
+| `tfv` | `<bin> validate` |
+| `tfw` | `<bin> workspace` |
+| `tfws` | `<bin> workspace select` |
 
 ## Install
 
