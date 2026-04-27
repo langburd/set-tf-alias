@@ -13,7 +13,6 @@ invokes `tenv` to install and activate the pinned version, and points `tf`,
 `tofu`, and `terraform` at the right binary. When no version file is present,
 it falls back to reading `.terraform.lock.hcl` for the provider registry,
 then to the presence of `*.tofu` files in the current directory.
-
 Read more about the problem this solves on [LinkedIn](https://www.linkedin.com/posts/langburd_devops-terraform-opentofu-share-7453082282162081793-HVvQ/).
 
 ## Demo
